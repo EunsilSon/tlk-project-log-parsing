@@ -89,15 +89,23 @@ try {
 
 # 파일 읽기
 ## FileInputStream
+- byte 배열을 문자열로 변경할 때는 new String(byte 배열)처럼 사용하여 변경
+```java
+byte[] b = new byte[1024];
+FileInputStream input = new FileInputStream("C:\\Users\\USER\\Desktop\\out.txt");
+input.read(b);
+System.out.println(new String(b));
+input.close();
+```
 
 ## FileReader + BufferedReader = 한 줄 단위로 읽기
-- byte 배열을 문자열로 변경할 때는 new String(byte 배열)처럼 사용하여 변경
-
 ```java
-BufferedReader br = new BufferedReader(new FileReader("c:/out.txt"));
+BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\USER\\Desktop\\out.txt"));
 while(true) {
     String line = br.readLine();
-    if (line==null) break;  // 더 이상 읽을 라인이 없을 경우 while 문을 빠져나간다.
+    if (line == null) {
+        break;  // 더 이상 읽을 라인이 없을 경우 while문 종료
+    }
     System.out.println(line);
 }
 br.close();
