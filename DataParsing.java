@@ -1,35 +1,16 @@
 import java.io.*;
-import java.math.BigInteger;
 import java.util.*;
 
 public class DataParsing {
-    static List<String> hexLogList = new ArrayList<>();
-
     public static void main(String[] args) {
+        List<String> hexLogList = new ArrayList<>();
+
         // 파일 읽기
         String logSrc = "C:\\Users\\USER\\Desktop\\logs.txt";
-        readFile(logSrc);
+        readFile(logSrc, hexLogList);
 
         // hex 문자열 -> byte 배열
-        //for (String hexLog : hexLogList) {
-            byte[] byteLog = hexStringToByteArray(hexLogList.get(0)); // test
-
-            // byte 배열을 N byte 만큼 자르기 + hex 변환
-            List<String> hexStringList = new ArrayList<>();
-            int[] byteInfo = {2, 2, 4, 2, 2, 1, 1};
-            int srcPos = 0;
-
-            for (int byteNum : byteInfo) {
-                byte[] byteArr = new byte[byteNum];
-                System.arraycopy(byteLog, srcPos, byteArr, 0, byteNum);
-                hexStringList.add(byteArrayToHexString(byteArr));
-                srcPos += byteNum;
-            }
-
-            for (String s : hexStringList) {
-                System.out.println(s);
-            }
-        //}
+        List<String> hexStringList = splitHexStringByByte(hexLogList);
 
         // 자른 바이트 변환
 
@@ -37,7 +18,7 @@ public class DataParsing {
 
     }
 
-    public static void readFile(String logSrc) {
+    public static void readFile(String logSrc, List<String> hexLogList) {
         try {
             BufferedReader br = new BufferedReader(new FileReader(logSrc));
 
@@ -54,6 +35,26 @@ public class DataParsing {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
+    }
+
+    public static List<String> splitHexStringByByte(List<String> hexLogList) {
+        //for (String hexLog : hexLogList) {
+        byte[] byteLog = hexStringToByteArray(hexLogList.get(0)); // test
+
+        // byte 배열을 N byte 만큼 자르기 + hex 변환
+        List<String> hexStringList = new ArrayList<>();
+        int[] byteInfo = {2, 2, 4, 2, 2, 1, 1};
+        int srcPos = 0;
+
+        for (int byteNum : byteInfo) {
+            byte[] byteArr = new byte[byteNum];
+            System.arraycopy(byteLog, srcPos, byteArr, 0, byteNum);
+            hexStringList.add(byteArrayToHexString(byteArr));
+            srcPos += byteNum;
+        }
+
+       return hexStringList;
+        //}
     }
 
     public static byte[] hexStringToByteArray(String hexLog) {
