@@ -1,4 +1,5 @@
 import java.io.*;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -6,23 +7,21 @@ public class DataParsing {
     public static void main(String[] args) {
         final String LOG_SRC = "C:\\Users\\USER\\Desktop\\logs.txt";
         final String RESULT_LOG_SRC = "C:\\Users\\USER\\Desktop\\log_parsing_result.txt";
-        List<String> hexLogList = new ArrayList<>();
+        List<String> hexLogs = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
 
-        // 파일 읽기
-        readFile(LOG_SRC, hexLogList);
+        /* 1. 파일 읽기 */
+        readFile(LOG_SRC, hexLogs);
 
-        //for (int i = 0; i < hexLogList.size(); i++) {
-            // hex 문자열 -> byte 배열
-            List<String> byteLogList = splitHexStringByByte(hexLogList.get(0));
-
-            // 자른 바이트 파싱
+        /* 2. 바이트 단위 파싱 */
+        for (String log : hexLogs) {
+            List<String> splitHexLog = splitHexStrByByte(log);
             sb.setLength(0);
-            String parsingResult = parsingHexData(byteLogList, sb);
+            String parsingResult = parsingHexData(splitHexLog, sb);
 
-            // 최종 파일 작성
+            /* 3. 최종 파일 생성 */
             writeFile(RESULT_LOG_SRC, parsingResult);
-        //}
+        }
     }
 
     public static void readFile(String logSrc, List<String> hexLogList) {
@@ -44,25 +43,32 @@ public class DataParsing {
         }
     }
 
-    public static List<String> splitHexStringByByte(String hexLog) {
-        //for (String hexLog : hexLogList) {
-            byte[] byteLog = hexStringToByteArray(hexLog);
-            // byte 배열을 N byte 만큼 자르기 + hex 변환
-            List<String> hexStringList = new ArrayList<>();
-            int[] byteInfo = {2, 2, 4, 2, 2, 1, 1};
-            int srcPos = 0;
+    public static void writeFile(String RESULT_LOG_SRC, String parsingResult) {
+        try {
+            FileWriter fw = new FileWriter(RESULT_LOG_SRC, true); // default: false
+            fw.write(parsingResult + "\r\n");
+            fw.close();
+        } catch (IOException e) {
+            e.getStackTrace();
+        }
+    }
 
-            for (int byteNum : byteInfo) {
-                byte[] byteArr = new byte[byteNum];
-                System.arraycopy(byteLog, srcPos, byteArr, 0, byteNum);
-                hexStringList.add(byteArrayToHexString(byteArr));
-                srcPos += byteNum;
-            }
-        //}
+    public static List<String> splitHexStrByByte(String hexLog) {
+        byte[] byteLog = hexStrToByteArr(hexLog); // byte 배열을 N byte 만큼 자르기 + hex 변환
+        List<String> hexStringList = new ArrayList<>();
+        int[] byteInfo = {2, 2, 4, 2, 2, 1, 1};
+        int srcPos = 0;
+
+        for (int byteNum : byteInfo) {
+            byte[] divideArr = new byte[byteNum];
+            System.arraycopy(byteLog, srcPos, divideArr, 0, byteNum);
+            hexStringList.add(byteArrayToHexString(divideArr));
+            srcPos += byteNum;
+        }
         return hexStringList;
     }
 
-    public static byte[] hexStringToByteArray(String hexLog) {
+    public static byte[] hexStrToByteArr(String hexLog) {
         int length = hexLog.length();
         byte[] byteLog = new byte[length / 2]; // 16진수 문자열의 한 문자는 4bit, 8bit = 1byte 따라서 나누기 2를 함
 
@@ -82,24 +88,23 @@ public class DataParsing {
         return sb.toString();
     }
 
-    public static String parsingHexData(List<String> byteLogList, StringBuilder sb) {
-        sb.append("'" + byteLogList.get(0) + "'").append(", ");
+    public static String parsingHexData(List<String> splitHexLog, StringBuilder sb) {
+        sb.append("'" + splitHexLog.get(0) + "'").append(", ");
 
-        sb.append(Integer.parseInt(byteLogList.get(1), 16)).append(", ");
+        sb.append(Integer.parseInt(splitHexLog.get(1), 16)).append(", ");
 
-        int data3 = Integer.parseInt(byteLogList.get(2), 16);
+        int data3 = Integer.parseInt(splitHexLog.get(2), 16);
         sb.append("'" + millisToDate(data3) + "'").append(", ");
 
-        int data4 = Integer.parseInt(byteLogList.get(3), 16);
-        sb.append((float) data4 / 10).append(", ");
+        sb.append((float) hexToSignedInt(splitHexLog.get(3)) / 10).append(", ");
 
-        int data5 = Integer.parseInt(byteLogList.get(4), 16);
+        int data5 = Integer.parseInt(splitHexLog.get(4), 16);
         sb.append((float) data5 / 10).append(", ");
 
-        int data6 = Integer.parseInt(byteLogList.get(5), 16);
+        int data6 = Integer.parseInt(splitHexLog.get(5), 16);
         sb.append((float) data6 / 10).append(", ");
 
-        sb.append(Integer.parseInt(byteLogList.get(6), 16));
+        sb.append(Integer.parseInt(splitHexLog.get(6), 16));
 
         return sb.toString();
     }
@@ -112,15 +117,13 @@ public class DataParsing {
         return sdf.format(timeInDate);
     }
 
-    public static void writeFile(String resultSrc, String parsingResult) {
-        try {
-            PrintWriter pw = new PrintWriter(resultSrc);
-            pw.println(parsingResult);
-            pw.close();
-        } catch (IOException e) {
-            e.getStackTrace();
+    public static int hexToSignedInt(String hex) {
+        int num = Integer.parseInt(hex, 16);
+
+        if ((num & 0x8000) != 0) {
+            num = num - (1 << 16);
         }
+
+        return num;
     }
-
-
 }
