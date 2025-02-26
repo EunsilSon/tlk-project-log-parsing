@@ -14,7 +14,7 @@ public class Main {
 
     public void logDataFileParsing(String LOG_SRC, String RESULT_LOG_SRC) {
         File file = new File();
-        Log log = new Log();
+        Parsing parsing = new Parsing();
 
         List<String> hexLogs = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
@@ -24,11 +24,11 @@ public class Main {
 
         /* 2. 바이트 단위 파싱 */
         for (String hexLog : hexLogs) {
-            List<String> splitHexLog = log.splitHexStrByByte(hexLog);
+            List<String> splitHexLog = parsing.splitHexStrByByte(hexLog);
             sb.setLength(0);
-            String parsingResult = log.parsingHexData(splitHexLog, sb);
+            String parsingResult = parsing.typeCasting(splitHexLog, sb);
 
-            /* 3. 최종 파일 생성 */
+            /* 3. 최종 데이터 파일에 출력 */
             file.write(RESULT_LOG_SRC, parsingResult);
         }
     }
