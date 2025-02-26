@@ -37,9 +37,7 @@ try {
 4. 2바이트(010f) : signed integer / 10 => `float`
 5. 2바이트(01dc) : integer / 10 => `float`
 6. 1바이트(00) : integer / 10 => `float`
-    - (float) Integer.parseInt("00", 16) / 10
 7. 1바이트(5f) : integer => `integer`
-    - Integer.parseInt("5f", 16)
 
 
 - 메인 파싱 메서드에서 8개 순차적으로 호출
