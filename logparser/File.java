@@ -1,9 +1,6 @@
-package dataParser;
+package logparser;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -16,26 +13,25 @@ public class File {
 
             while (true) {
                 String line = br.readLine();
-                if (line == null) {
-                    break;
-                } else {
+                if (line != null) {
                     hexLogList.add(line);
+                } else {
+                    break;
                 }
             }
-
             br.close();
-        } catch (IOException ioException) {
-            logger.warning(ioException.getMessage());
+        } catch (IOException e) {
+            logger.warning(e.getMessage());
         }
     }
 
-    public void write(String RESULT_LOG_SRC, String parsingResult) {
+    public void write(String RESULT_LOG_SRC, String parsingResultStr) {
         try {
-            FileWriter fw = new FileWriter(RESULT_LOG_SRC, true); // default: false
-            fw.write(parsingResult + "\r\n");
+            FileWriter fw = new FileWriter(RESULT_LOG_SRC, true); // true = 수정 모드
+            fw.write(parsingResultStr + "\r\n");
             fw.close();
         } catch (IOException e) {
-            e.getStackTrace();
+            logger.warning(e.getMessage());
         }
     }
 }
