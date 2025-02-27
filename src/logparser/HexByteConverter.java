@@ -1,9 +1,14 @@
 package logparser;
 
+import exception.CustomException;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class HexByteConverter {
+    Logger logger = Logger.getLogger("DataParserLogger");
+
     public List<String> splitHexByByte(String hexLog) {
         byte[] byteLog = hexStrToByteArr(hexLog);
         List<String> hexByteList = new ArrayList<>();
@@ -21,11 +26,20 @@ public class HexByteConverter {
     }
 
     private byte[] hexStrToByteArr(String hexLog) {
-        int length = hexLog.length();
-        byte[] byteLog = new byte[length / 2];
+        byte[] byteLog = null;
+        try {
+            int length = hexLog.length();
 
-        for (int i = 0; i < length; i += 2) {
-            byteLog[i / 2] = (byte) ((Character.digit(hexLog.charAt(i), 16) << 4) + Character.digit(hexLog.charAt(i + 1), 16));
+            if (length % 2 != 0) {
+                throw new CustomException("유효한 16진수 문자열이 아닙니다.");
+            }
+
+            byteLog = new byte[length / 2];
+            for (int i = 0; i < length; i += 2) {
+                byteLog[i / 2] = (byte) ((Character.digit(hexLog.charAt(i), 16) << 4) + Character.digit(hexLog.charAt(i + 1), 16));
+            }
+        } catch (CustomException e) {
+            logger.warning(e.getMessage());
         }
         return byteLog;
     }

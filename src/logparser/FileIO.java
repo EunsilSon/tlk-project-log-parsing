@@ -31,7 +31,8 @@ public class FileIO {
             logger.warning(e.getMessage());
         }
     }
-        public void write(String resultLogSrc, String parsingResultStr) {
+
+    public void write(String resultLogSrc, String parsingResultStr) {
         try {
             FileWriter fw = new FileWriter(resultLogSrc, true); // true = 수정 모드
             fw.write(parsingResultStr + "\r\n");
@@ -39,5 +40,23 @@ public class FileIO {
         } catch (IOException e) {
             logger.warning(e.getMessage());
         }
+    }
+
+    public String[] getDiskSpace() {
+        File root;
+        try {
+            root = new File("/");
+            String[] list = new String[2];
+            list[0] = toMB(root.getTotalSpace());
+            list[1] = toMB(root.getUsableSpace());
+            return list;
+        } catch (Exception e) {
+            logger.warning(e.getMessage());
+            return null;
+        }
+    }
+
+    public String toMB(long size) {
+        return String.valueOf((int) (size / (1024 * 1024)));
     }
 }
