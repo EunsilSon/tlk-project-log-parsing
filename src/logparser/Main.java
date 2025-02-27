@@ -13,7 +13,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("불러올 파일의 절대 경로와 파일명을 함께 입력하세요."); // C:\Users\USER\Desktop\logs.txt
+        System.out.println("불러올 파일의 절대 경로와 파일명을 함께 입력하세요.");
         String logSrc = br.readLine();
 
         Main main = new Main();
@@ -45,4 +45,5 @@ public class Main {
             fileIO.write(resultLogSrc, parser.parseHexString(hexByteList)); // 3. 최종 데이터 파일 출력
         }
     }
+
 }

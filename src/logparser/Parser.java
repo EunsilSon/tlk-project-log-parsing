@@ -10,13 +10,13 @@ public class Parser {
         wrapWithQuotes(result, splitHexLog.get(0));
         addDelimiter(result);
 
-        result.append(Integer.parseInt(splitHexLog.get(1), 16));
+        result.append(String.format("%03d", Integer.parseInt(splitHexLog.get(1), 16)));
         addDelimiter(result);
 
         wrapWithQuotes(result, millisToDate(Integer.parseInt(splitHexLog.get(2), 16)));
         addDelimiter(result);
 
-        result.append((float) hexToSignedInt(splitHexLog.get(3)) / 10);
+        result.append(String.format("%4.1f", (float) hexToSignedInt(splitHexLog.get(3)) / 10));
         addDelimiter(result);
 
         result.append((float) Integer.parseInt(splitHexLog.get(4), 16) / 10);
