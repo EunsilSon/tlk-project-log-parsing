@@ -1,33 +1,48 @@
 package logparser;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class Main {
-    public static void main(String[] args) {
-        // TODO: 파일명 입력 받기 (경로 포함/미포함 따로)
-        // TODO: 결과 파일명에 datetime(현재시간) 추가 (결과 파일 경로: result 폴더)
-        final String LOG_SRC = "C:\\Users\\USER\\Desktop\\logs.txt";
-        final String RESULT_LOG_SRC = "C:\\Users\\USER\\Desktop\\250227_soneunsil_logs_result.txt";
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("불러올 파일의 절대 경로와 파일명을 함께 입력하세요."); // C:\Users\USER\Desktop\logs.txt
+        String logSrc = br.readLine();
 
         Main main = new Main();
-        main.logDataFileParsing(LOG_SRC, RESULT_LOG_SRC);
+        main.parseHexLogAndWriteToFile(logSrc, main.getResultFileSrcAndName());
     }
 
-    public void logDataFileParsing(String LOG_SRC, String RESULT_LOG_SRC) {
-        File file = new File();
+    private String getResultFileSrcAndName() {
+        String path = System.getProperty("user.dir") + "\\result\\";
+        String name = String.format("log_result_%s.txt", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd__HH_mm")));
+
+        File f = new File(path);
+        if (!f.exists()) {
+            f.mkdir();
+        }
+
+        return path + name;
+    }
+
+    private void parseHexLogAndWriteToFile(String logSrc, String resultLogSrc) {
+        FileIO fileIO = new FileIO();
         HexByteConverter hexByteConverter = new HexByteConverter();
         Parser parser = new Parser();
 
         List<String> hexLogs = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
-
-        file.read(LOG_SRC, hexLogs); // 1. 파일 읽기
+        fileIO.read(logSrc, hexLogs); // 1. 파일 읽기
 
         for (String hexLog : hexLogs) {
             List<String> hexByteList = hexByteConverter.splitHexByByte(hexLog); // 2. 바이트 단위 파싱
-            file.write(RESULT_LOG_SRC, parser.parsing(hexByteList, sb)); // 3. 최종 데이터 파일 출력
-            sb.setLength(0);
+            fileIO.write(resultLogSrc, parser.parseHexString(hexByteList)); // 3. 최종 데이터 파일 출력
         }
     }
 }

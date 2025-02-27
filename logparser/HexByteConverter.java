@@ -20,7 +20,7 @@ public class HexByteConverter {
         return hexByteList;
     }
 
-    public byte[] hexStrToByteArr(String hexLog) {
+    private byte[] hexStrToByteArr(String hexLog) {
         int length = hexLog.length();
         byte[] byteLog = new byte[length / 2];
 
@@ -30,7 +30,7 @@ public class HexByteConverter {
         return byteLog;
     }
 
-    public String byteArrToHexStr(byte[] byteArray) {
+    private String byteArrToHexStr(byte[] byteArray) {
         StringBuilder sb = new StringBuilder();
         for (byte b : byteArray) {
             sb.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
